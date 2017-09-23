@@ -1,48 +1,114 @@
 <template>
   <v-container>
-    <v-layout row wrap>
-      <v-flex xs12>
-        <v-btn large info @click="getName">Get Random Name</v-btn>
-        <h5 class="info--text pl-5 pa-4">{{ name }}</h5>
-      </v-flex>
-    </v-layout>
+    <v-flex xs12>
+      <v-btn
+              large info @click="getAllNames"
+              :loading="loading"
+              :disabled="loading">
+        Get All Names
+      </v-btn>
+      <v-btn
+              fab small info dark
+              @click="addNameComponent"
+              v-tooltip:right="{ html: 'Add New Name' }">
+        <v-icon>add</v-icon>
+      </v-btn>
+      <name-component
+              v-for="name in names"
+              :key="name.id"
+              :data="name"
+              @deleted="nameDeleted($event)"
+              @actionSuccess="actionSuccess($event)"
+      ></name-component>
+    </v-flex>
+    <v-snackbar
+            :timeout="snackbar.time"
+            info top
+            v-model="snackbar.show"
+    >
+      {{ snackbar.text }}
+      <v-btn
+              flat small dark
+              @click.native="snackbar.show = false">
+        Close
+      </v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 
 <script>
+  import NameComponent from './NameComponent.vue'
   import axios from 'axios'
 
   export default {
+    components: {
+      'name-component': NameComponent
+    },
     data () {
       return {
-        name: 'No Name'
+        names: [],
+        loading: false,
+        snackbar: {
+          show: false,
+          text: '',
+          time: 2000
+        }
       }
     },
     methods: {
-      getName () {
-        axios.post('https://api.random.org/json-rpc/1/invoke', {
-          'jsonrpc': '2.0',
-          'method': 'generateStrings',
-          'params': {
-            'apiKey': 'f95d86b1-6c38-4ca5-a32c-aaadfd57a4df',
-            'n': 1,
-            'length': 20,
-            'characters': 'abcdefghijklmnopqrstuvwxyz',
-            'replacement': true
-          },
-          'id': 1
-        })
+      getAllNames () {
+        this.loading = true
+        this.names = []
+        axios.get('http://localhost/demo-app-backend/public/api/name')
           .then(
             (response) => {
-              this.name = response.data.result.random.data[0]
+              this.loading = false
+              const allNames = []
+              response.data.names.map((el) => {
+                allNames.push({
+                  id: el.id,
+                  name: el.name
+                })
+              })
+              this.names = allNames
+              this.snackbar.text = 'Read Operation'
+              this.snackbar.show = true
             }
           )
           .catch(
-            (response) => {
-              this.name = 'Error !! Check Console Log'
-              console.log(response)
+            (error) => {
+              this.loading = false
+              console.log(error)
             }
           )
+      },
+      addNameComponent () {
+        let exists = false
+        this.names.map((el) => {
+          if (el.id === -1) {
+            exists = true
+          }
+        })
+        if (!exists) {
+          this.names.unshift(
+            {
+              id: -1,
+              name: ''
+            }
+          )
+        }
+      },
+      nameDeleted (id) {
+        const index = this.names.findIndex((el) => {
+          return el.id === id
+        })
+        this.names.splice(index, 1)
+        this.snackbar.text = 'Delete Operation'
+        this.snackbar.show = true
+      },
+      actionSuccess (action) {
+        this.snackbar.text = action === 1 ? 'Update Operation' : 'Create Operation'
+        this.snackbar.show = true
       }
     }
   }
