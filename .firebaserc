@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "dev": "crud-demoapp-dev",
+    "prod": "crud-demoapp"
+  }
+}

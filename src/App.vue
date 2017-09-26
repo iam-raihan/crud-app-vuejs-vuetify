@@ -13,9 +13,7 @@
 <script>
   export default {
     data () {
-      return {
-        fixed: true
-      }
+      return {}
     }
   }
 </script>
