@@ -55,7 +55,7 @@
         this.loading1 = true
 
         if (this.name.id >= 0) {
-          axios.put('http://localhost/demo-app-backend/public/api/name/' + this.name.id, {
+          axios.put('https://hidden-mesa-33270.herokuapp.com/api/name/' + this.name.id, {
             'name': this.name.name
           })
             .then(
@@ -67,7 +67,7 @@
               }
             )
         } else {
-          axios.post('http://localhost/demo-app-backend/public/api/name', {
+          axios.post('https://hidden-mesa-33270.herokuapp.com/api/name', {
             'name': this.name.name
           })
             .then(
@@ -88,9 +88,10 @@
       actionDelete () {
         this.loading2 = true
         if (this.name.id >= 0) {
-          axios.delete('http://localhost/demo-app-backend/public/api/name/' + this.name.id)
+          axios.delete('https://hidden-mesa-33270.herokuapp.com/api/name/' + this.name.id)
             .then(
-              () => {
+              (response) => {
+                console.log(response)
                 this.loading2 = false
                 this.$emit('deleted', this.name.id)
               }
