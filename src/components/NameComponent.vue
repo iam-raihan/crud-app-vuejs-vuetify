@@ -90,8 +90,7 @@
         if (this.name.id >= 0) {
           axios.delete('https://hidden-mesa-33270.herokuapp.com/api/name/' + this.name.id)
             .then(
-              (response) => {
-                console.log(response)
+              () => {
                 this.loading2 = false
                 this.$emit('deleted', this.name.id)
               }
