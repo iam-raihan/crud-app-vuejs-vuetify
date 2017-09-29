@@ -59,7 +59,7 @@
       getAllNames () {
         this.loading = true
         this.names = []
-        axios.get('http://localhost/demo-app-backend/public/api/name')
+        axios.get('https://hidden-mesa-33270.herokuapp.com/api/name')
           .then(
             (response) => {
               this.loading = false
